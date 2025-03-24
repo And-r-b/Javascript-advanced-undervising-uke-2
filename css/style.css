@@ -1,0 +1,9 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+#error {
+    color: red;
+    text-decoration: underline;
+}

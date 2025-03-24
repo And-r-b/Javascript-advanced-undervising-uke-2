@@ -23,8 +23,13 @@ function addTodoHandler () {
 
 }
 
-
+// Creates a todo element and sets its text
 function createTodoElement(todoText) {
+
+    if (todoText == "") {
+        alert("Todo item cannot be empty!")
+    }
+
     const myElement = document.createElement("h1")
     myElement.innerText = todoText
 
