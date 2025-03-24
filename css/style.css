@@ -7,3 +7,9 @@ body {
     color: red;
     text-decoration: underline;
 }
+
+.todo-item {
+    display: flex;
+    justify-items: space-between;
+    width: 100%;
+}
