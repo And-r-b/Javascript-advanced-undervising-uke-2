@@ -8,12 +8,27 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Todolist</h1>
-    <p id="error"></p>
-    
-    <input type="text" id="input-todo-text">
-    <button id="add-todo-button">Add todo</button>
-
-    <ul id="todo-items"></ul>
+    <header>
+        <h1>Todo Liste</h1>
+        <form id="task-form">
+            <input  
+                id="task-input"
+                name="task-input"
+                type="text"
+            >
+            <input type="submit">
+        </form>
+        <div id="menu">
+            <label for="show-completed">Fullførte Tasks</label>
+            <input 
+                type="checkbox"
+                name="show-completed"
+                id="show-completed"
+            >
+        </div>
+    </header>
+    <main id="list-container">
+        
+    </main>
 </body>
 </html>

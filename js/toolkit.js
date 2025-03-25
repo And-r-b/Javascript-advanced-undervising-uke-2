@@ -5,6 +5,11 @@ const addTodoButtonEl = document.getElementById("add-todo-button")
 const todoItemsContainer = document.getElementById("todo-items")
 const errorEl = document.getElementById("error")
 
+let tasks = [];
+
+const saveTaskToStorage = () => localStorage.setItem('tasks', JSON.stringify(tasks))
+
+
 // add event to the "form" 
 
 addTodoButtonEl.addEventListener("click", addTodoHandler)
