@@ -1,65 +1,99 @@
 // Grab HTML elements:
+const taskForm = document.querySelector("#task-form");
+const taskInput = document.querySelector("#task-input");
+const listContainer = document.querySelector("#list-container");
 
-const inputTodoEl = document.getElementById("input-todo-text")
-const addTodoButtonEl = document.getElementById("add-todo-button")
-const todoItemsContainer = document.getElementById("todo-items")
-const errorEl = document.getElementById("error")
+let filters = { showCompleted: false}
 
 let tasks = [];
 
+// Todo - Save local storage
 const saveTaskToStorage = () => localStorage.setItem('tasks', JSON.stringify(tasks))
+const saveFiltersStorage = () => localStorage.setItem('filters', JSON.stringify(filters))
 
 
 // add event to the "form" 
 
-addTodoButtonEl.addEventListener("click", addTodoHandler)
+taskForm.addEventListener("submit", addTodoHandler);
+  
 
-function addTodoHandler () {
-    // Read input value
-    let todoText = inputTodoEl.value
-    // check if unput is valid
-    if (todoText == "") {
-        let errorMessage = "Todo item cannot be empty!"
-        errorEl.textContent = errorMessage
-        
-        return // if there is errors, return will prevent execution of code
-    } else if (todoText.length < 3) {
-        let errorMessage = "Todo item cannot be less than 3 characters!"
-        errorEl.textContent = errorMessage
-        
-        return 
+function addTodoHandler (e) {   
+    e.preventDefault();
+    const formData = new FormData(taskForm);
+    const userInput = formData.get('task-input');
+    taskInput.value = "";
+
+    if (!userInput) {
+        return alert("Todo tekst kan ikke være tom.");
+    } else if (userInput.lenght < 3) {
+        return alert("Todo tekst kan ikke være under 3 bokstaver.");
     }
 
-    // clear the error message
-    errorEl.textContent = ""
-
-    // clear the input field
-    inputTodoEl.value = ""
-    // Do something with the input text...
-    console.log(todoText)
-
-    createTodoElement(todoText)
-
-}
-
-// Creates a todo element and sets its text
-function createTodoElement(todoText) {
-
-    const todoItemEl = document.createElement("li")
-    todoItemEl.innerText = todoText
-
-    const todoItemRemoveButton = document.createElement("button")
-    todoItemRemoveButton.textContent = "Remove"
-
-    todoItemEl.append(todoItemRemoveButton)
-
-    todoItemsContainer.append(todoItemEl)
-
-    // add remove todo event handler
-    todoItemRemoveButton.addEventListener("click", function() {
-        // console.warn("I want to remove " + todoItemEl.textContent)
-
-        todoItemEl.remove() // remove only this todoitem
+    tasks.push({
+        timestamp: new Date(), 
+        description: userInput,
+        completed: false
     })
-
+    saveTaskToStorage()
+    renderPage();
 }
+
+function completedTaskInput(task) {
+    const inputElement = document.createElement('input');
+    inputElement.type = "checkbox";
+    inputElement.checked = task.completed;
+
+    inputElement.addEventListener('change', (e) => {
+        task.completed = e.target.checked;
+        saveTaskToStorage();
+        renderPage();
+    })
+    return inputElement;
+}
+
+function buildPage(taskArr) {
+    listContainer.innerHTML = "";
+    taskArr.forEach(task => {
+        const taskContainer = document.createElement("div");
+        taskContainer.classList.add('task-container');
+        task.completed ? taskContainer.classList.add('completed') : taskContainer.classList.remove('completed');
+        
+        const timeStampElement = document.createElement('p');
+        timeStampElement.classList.add('datetime');
+        timeStampElement.textContent = task.timestamp.toLocaleString('en-UK');
+        
+        const descriptionElement = document.createElement('p');
+        descriptionElement.classList.add('description');
+        descriptionElement.textContent = task.description
+
+        const completeInput = completedTaskInput(task)
+        
+        // append elementer til task container
+        taskContainer.append(
+            timeStampElement,
+            descriptionElement,
+            completeInput
+        );
+        // prepend taskContainer til list container
+        listContainer.prepend(taskContainer) 
+    })
+}
+
+function filterArray(taskArr) {
+    return taskArr.filter((task) => (filters.showCompleted || !task.completed))
+}
+
+function renderPage() {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+    }
+    const storedFilters = localStorage.getItem('filters');
+    if (storedFilters) {
+        filters = JSON.parse(storedFilters);
+    }
+
+    buildPage(filterArray(tasks));
+}
+
+renderPage();
